@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+    crossorigin="anonymous">
+  <link href="cover.css" rel="stylesheet">
+
+  <style>
+    .carousel-caption {
+      position: static;
+      padding-bottom: 3em;
+    }
+
+    .alert {
+      text-shadow: none;
+    }
+  </style>
+  <title>Sebbity's Mods for Bitstream</title>
+</head>
+
+<body class="text-center">
+  <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    <header class="masthead mb-auto">
+      <div class="inner">
+        <h3 class="masthead-brand">Sebbity's Bitstream Mods</h3>
+      </div>
+    </header>
+
+    <main role="main" class="inner cover">
+      <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" data-interval="3000">
+        <ol class="carousel-indicators">
+          <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+          <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+          <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="carousel-caption">
+              <h2 class="cover-heading">Manually change bitrate without killing your stream</h2>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <div class="carousel-caption">
+              <h2 class="cover-heading">Automatic bitrate adjustment based on network speed</h2>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <div class="carousel-caption">
+              <h2 class="cover-heading">Pre-emptive lag avoidance and faster recovery</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="lead">First, you'll need to
+        <p />
+        <a target="_blank" rel="noopener" href="https://apkpure.com/bitstream-live-streaming/ro.numedecod.cast/download/97-APK" class="btn btn-outline-light">Get Bitstream v2.7.97</a>
+        <p />and then</p>
+      <p class="lead">
+        <a href="#" class="btn btn-lg btn-primary install-button">Patch the Bitstream APK</a>
+      </p>
+      <p class="lead">Finally, install the patched APK
+        <hr>
+        <p class="text-muted">(you may need to manually delete the original app and don't forget to unlock the watermark/web sources before patching)</p>
+      </p>
+      <p id="log" class="text-left alert alert-info d-none"></p>
+    </main>
+
+    <footer class="mastfoot mt-auto">
+      <div class="inner">
+        <p>An <a href="https://github.com/sebbity/bitstream-mods">open-source project</a>
+          by <a href="https://twitch.tv/sebbity">Sebbity</a>
+        </p>
+        <p class="small">This project is not affiliated with or endorsed by the Bitstream developer(s)</p>
+      </div>
+    </footer>
+  </div>
+
+  <input id="fileInput" type="file" style="display: none" accept=".apk" />
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+
+  <script type="text/javascript" src="./lib/xdelta3_decoder.js"></script>
+  <script type="text/javascript" src="./lib/FileSaver.min.js"></script>
+
+  <script>    
+
+    function log(msg) {
+      $('#log').removeClass('d-none');
+      $('#log').append(Array.prototype.slice.call(arguments).join('') + '<br>');
+    }
+
+    function error(msg) {
+      $('#log').removeClass('alert-info');
+      $('#log').addClass('alert-danger');
+
+      [].unshift.call(arguments, "<strong>");
+      [].push.call(arguments, "</strong>");
+
+      log.apply(this, arguments);
+    }
+
+    function success(msg) {
+      $('#log').removeClass('alert-info');
+      $('#log').addClass('alert-success');
+
+      [].unshift.call(arguments, "<strong>");
+      [].push.call(arguments, "</strong>");
+
+      log.apply(this, arguments);
+    }
+
+    function hex(buffer) {
+      var hexCodes = [];
+      var view = new DataView(buffer);
+      for (var i = 0; i < view.byteLength; i += 4) {
+        // Using getUint32 reduces the number of iterations needed (we process 4 bytes each time)
+        var value = view.getUint32(i)
+        // toString(16) will give the hex representation of the number without padding
+        var stringValue = value.toString(16)
+        // We use concatenation and slice for padding
+        var padding = '00000000'
+        var paddedValue = (padding + stringValue).slice(-padding.length)
+        hexCodes.push(paddedValue);
+      }
+
+      // Join all the hex strings into one
+      return hexCodes.join("");
+    }
+
+    function loadFile(url, callback) {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4) {
+          if (this.status == 200) {
+            callback(new Uint8Array(this.response));
+          }
+        }
+      };
+      
+      log("Fetching ", url);
+
+      xhttp.open("GET", url, true);
+      xhttp.responseType = "arraybuffer";
+      xhttp.send();
+    }
+
+    $(".install-button").on("click", function () {
+      $("#fileInput").trigger("click");
+    });
+
+    $("#fileInput").on('change', function (e) {
+      if (e.target.files.length < 1) {
+        return;
+      }
+
+      var reader = new FileReader();
+
+      reader.addEventListener("load", function () {
+        
+        if (!crypto.subtle) {
+          error("No Crypto API - use a newer browser or make sure you're connected over https");
+          return;
+        }
+
+        crypto.subtle.digest("SHA-1", reader.result).then(function (hash) {
+          log("Input SHA1 ", hex(hash));
+
+          loadFile("mod.xdelta.bin", function (modDelta) {
+            log('Processing APK');
+
+            //XDelta3Decoder.disableDebug();
+
+            setTimeout(function () {
+              try {
+                var startTime = Date.now();
+                var target = XDelta3Decoder.decode(modDelta, new Uint8Array(reader.result));
+                var deltaTime = Date.now() - startTime;
+              } catch (e) {
+                log("Patch error: ", e.message);
+                error("That doesn't look like a Bitstream v2.7.97 APK - make sure you have the right one or <a href='https://twitter.com/sebbity' style='color: inherit;'>tweet @Sebbity</a> for help");
+                return;
+              }
+
+              var targetUint8Array = new Uint8Array(target);
+              log('Finished in ' + (deltaTime) + ' milliseconds');
+
+              crypto.subtle.digest("SHA-1", target).then(function (hash) {
+                log("Output SHA1 ", hex(hash));
+
+                // TODO: Check SHA to see if it matches target
+                var blob = new Blob([target], {
+                  type: "application/vnd.android.package-archive"
+                });
+
+                saveAs(blob, "bitstream-sebbity-mod.apk");
+                
+                success("Done!")
+              });
+            }, 0);
+          });
+        });
+      });
+
+      // Read in the image file as a data URL.
+      log("Loading '", e.target.files[0].name, "'..");
+      reader.readAsArrayBuffer(e.target.files[0]);
+
+    });
+  </script>
+</body>
+
+</html>
