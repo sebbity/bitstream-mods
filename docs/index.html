@@ -63,30 +63,44 @@
         </div>
       </div>
 
-      <p class="lead">First, you'll need to
+      <p class="lead">
+        <h4 class="text-left font-weight-light">First</h4>
+        <ol class="text-left font-weight-light">
+          <li>Copy down your Bitstream RTMP/WebSource settings - they will be deleted when you uninstall the original app</li>
+          <li>Buy the in-app purchase to unlock the watermark/web sources if you can - Google won't trust the modded version for in-app purchases</li>
+          <li>Uninstall the original Bitstream app</li>
+        </ol>
+      </p>
+
+      <p class="lead">Then, you'll need to
         <p />
         <a target="_blank" rel="noopener" href="https://apkpure.com/bitstream-live-streaming/ro.numedecod.cast/download/97-APK" class="btn btn-outline-light">Get Bitstream v2.7.97</a>
-        <p />and then</p>
+        <p />and then
+      </p>
+      
       <p class="lead">
         <a href="#" class="btn btn-lg btn-primary install-button">Patch the Bitstream APK</a>
       </p>
+      
       <p class="lead">Finally, install the patched APK
         <hr>
         <p id="log" class="text-left alert alert-info d-none"></p>
-        <hr>
-        <p>
-          <h4 class="text-left font-weight-light">Troubleshooting</h4>
-          <ul class="text-left font-weight-light">
-            <li>You may need to manually delete the original Bitstream app before installing</li>
-            <li>If you get "App not installed" try temporarily disabling Play Protect in Play Store -> Play Protect -> Settings (top right cog) -> Untick Scan device for security threats  (Re-enable this after installing)</li>
-            <li>The in-app purchase to unlock the watermark/web sources won't work in the modded version, so pay for it before installing (or uninstall/reinstall the original)</li>
-          </ul>
-        </p>
+      </p>
     </main>
 
     <footer class="mastfoot mt-auto">
       <div class="inner">
-        <p>An <a href="https://github.com/sebbity/bitstream-mods">open-source project</a>
+        <p class="mastfoot mt-auto">
+          <h4 class="text-left font-weight-light">Troubleshooting</h4>
+          <ul class="text-left font-weight-light">
+            <li>If you get "App not installed" try temporarily disabling Play Protect in Play Store -> Play Protect -> Settings (top right cog) -> Untick Scan device for security threats (Re-enable this after installing)</li>
+            <li><a href='https://discord.gg/MMv23Fn'">Pop into Discord</a> if you have any other problems</li>
+          </ul>
+        </p>
+
+        <hr>
+
+        <p>An <a href="https://github.com/sebbity/bitstream-mods">project</a>
           by <a href="https://twitch.tv/sebbity">Sebbity</a>
         </p>
         <p class="small">This project is not affiliated with or endorsed by the Bitstream developer(s)</p>
@@ -201,7 +215,7 @@
                 var deltaTime = Date.now() - startTime;
               } catch (e) {
                 log("Patch error: ", e.message);
-                error("That doesn't look like a Bitstream v2.7.97 APK - make sure you have the right one or <a href='https://twitter.com/sebbity' style='color: inherit;'>tweet @Sebbity</a> for help");
+                error("That doesn't look like a Bitstream v2.7.97 APK - make sure you have the right one or <a href='https://discord.gg/MMv23Fn' style='color: inherit;'>pop into Discord</a> for help");
                 return;
               }
 
